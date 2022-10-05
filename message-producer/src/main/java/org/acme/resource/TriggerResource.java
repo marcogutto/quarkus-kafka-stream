@@ -1,5 +1,8 @@
 package org.acme.resource;
 
+import java.util.concurrent.CompletionStage;
+
+import javax.inject.Inject;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -21,6 +24,7 @@ public class TriggerResource {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageResource.class);
 
+    @Inject
     @Channel("triggers")
     Emitter<Trigger> emitter;
 
@@ -30,7 +34,7 @@ public class TriggerResource {
 		
 		logger.info(trigger.toString());
 
-        emitter.send(trigger);
+        CompletionStage<Void> ack = emitter.send(trigger);
 		
 		return Uni.createFrom().item(Response.status(Response.Status.OK).build());
 		

@@ -1,5 +1,8 @@
 package org.acme.resource;
 
+import java.util.concurrent.CompletionStage;
+
+import javax.inject.Inject;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -20,6 +23,7 @@ public class MessageResource {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageResource.class);
 
+    @Inject
     @Channel("messages")
     Emitter<Message> emitter;
 
@@ -29,7 +33,7 @@ public class MessageResource {
 		
 		logger.info(message.toString());
 
-        emitter.send(message);
+        CompletionStage<Void> ack = emitter.send(message);
 		
 		return Uni.createFrom().item(Response.status(Response.Status.OK).build());
 		
